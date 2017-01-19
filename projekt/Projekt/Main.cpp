@@ -15,8 +15,6 @@ void czytajDane(char *litera, int *rozmiar)
 
 	cout << "\nPodaj rozmiar: ";
 	cin >> *rozmiar;
-
-	system("cls");
 }
 
 int *przygotujFigure( int rozmiar)
@@ -77,7 +75,14 @@ void rysujFigure(int rozmiar, int *pozycja, int zoom, int *figura, char litera, 
 		auto pos = &figura[(y- obecnaPozycja[1])*obecnyRozmiar];
 		for (int x = 0; x < obecnyRozmiar; x++)
 		{
-			cout << pos[x];
+			if (pos[x] == 1)
+			{
+				cout << litera;
+			}
+			else
+			{
+				cout << " ";
+			}
 		}
 		cout << "\n";
 	}
@@ -89,13 +94,65 @@ enum RUCH
 	GORA = 72,
 	LEWO = 75,
 	PRAWO = 77,
-	DOL = 80,
+	DOL = 80
 };
 
-bool ruch(RUCH strona )
+enum ZOOM
 {
+	PLUS = 43,
+	MINUS = 45
+};
 
+bool ruch(RUCH strona, int*pozycja, int rozmiar, int zoom, int *rozmiarOkna)
+{
+	int obecnyRozmiar = rozmiar + zoom;
+	if (strona == RUCH::GORA)
+	{
+		if (pozycja[1] - obecnyRozmiar > 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else if (strona == RUCH::DOL)
+	{
+		if (pozycja[1] <rozmiarOkna[1])
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else if (strona == RUCH::LEWO)
+	{
+		if (pozycja[0] >0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else if (strona == RUCH::PRAWO)
+	{
+		if (pozycja[0] + obecnyRozmiar < rozmiarOkna[0]+1)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 }
+
+bool zoom(ZOOM zoom, int rozmiar, int *rozmiarOkna);
 
 int main()
 {
@@ -119,22 +176,41 @@ int main()
 	while (klawisz != 27)
 	{
 		klawisz = getch();
-		if (klawisz == 72)
+		if (klawisz == RUCH::GORA)
 		{
-			ruch();
-			cout << "up\n";
+			if (ruch(RUCH::GORA, pozycja, rozmiarFigury, zoom, rozmiarOkna))
+			{
+				pozycja[1]--;
+				rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
+			}
 		}
-		else if (klawisz == 80)
+		else if (klawisz == RUCH::DOL)
 		{
-			cout << "down\n";
+			if (ruch(RUCH::DOL, pozycja, rozmiarFigury, zoom, rozmiarOkna))
+			{
+				pozycja[1]++;
+				rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
+			}
 		}
-		else if (klawisz == 75)
+		else if (klawisz == RUCH::LEWO)
 		{
-			cout << "left\n";
+			if (ruch(RUCH::LEWO, pozycja, rozmiarFigury, zoom, rozmiarOkna))
+			{
+				pozycja[0]--;
+				rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
+			}
 		}
-		else if (klawisz == 77)
+		else if (klawisz == RUCH::PRAWO)
 		{
-			cout << "right\n";
+			if (ruch(RUCH::PRAWO, pozycja, rozmiarFigury, zoom, rozmiarOkna))
+			{
+				pozycja[0]++;
+				rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
+			}
+		}
+		else if (klawisz == ZOOM::PLUS)
+		{
+
 		}
 	}
 	return 0;
