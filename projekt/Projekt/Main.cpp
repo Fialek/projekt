@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <conio.h>
 #include <Windows.h>
 #include <iostream>
@@ -5,7 +6,7 @@
 using namespace std;
 
 #define rozmiarPlanszy 30
-
+#pragma warning(disable:4996)
 
 void czytajDane(char *litera, int *rozmiar)
 {
@@ -18,10 +19,9 @@ void czytajDane(char *litera, int *rozmiar)
 	system("cls");
 }
 
-void przygotujFigure(int *figura, int rozmiar)
+int *przygotujFigure( int rozmiar)
 {
-	if (figura != nullptr)
-		delete figura;
+	int *figura;
 
 	figura = new int[rozmiar*rozmiar];
 	memset(figura, 0, rozmiar*rozmiar * sizeof(int));
@@ -33,68 +33,67 @@ void przygotujFigure(int *figura, int rozmiar)
 		{
 			if (x == y || x==rozmiar2)
 			{
-				auto pozycja = &figura[x];
-				*pozycja = 1;
+				auto pozycja = &figura[y*rozmiar];
+				pozycja[x] = 1;
 			}
 		}
 		rozmiar2--;
 	}
+
+	return figura;
 }
 
 void inicjalizacjaOkna(int *rozmiarOkna)
 {
 	SendMessage(GetConsoleWindow(), WM_SYSKEYDOWN, VK_RETURN, 0x20000000);
-	HWND console = GetConsoleWindow();
-	RECT r;
-	GetWindowRect(console, &r);
-	rozmiarOkna[0] = r.right;
-	rozmiarOkna[1] = r.bottom;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
 
-	/*for (int y = 0; y <= rozmiarPlanszy; y++)
-	{
-		for (int x = 0;x <= rozmiarPlanszy; x++)
-		{
-			if (y == 0 || y==rozmiarPlanszy)
-			{
-				cout << "-";
-			}
-			else if (x == 0 || x == rozmiarPlanszy)
-			{
-				cout << "|";
-			}
-			else {
-				cout << " ";
-			}
-		}
-		cout << "\n";
-	}*/
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+	rozmiarOkna[0] = csbi.srWindow.Right - csbi.srWindow.Left;
+	rozmiarOkna[1] = csbi.srWindow.Bottom - csbi.srWindow.Top;	
 }
 
 void rysujFigure(int rozmiar, int *pozycja, int zoom, int *figura, char litera, int *rozmiarOkna)
 {
+	system("cls");
+
 	int obecnyRozmiar = rozmiar + zoom;
-	przygotujFigure(figura, obecnyRozmiar);
+	figura = przygotujFigure( obecnyRozmiar);
 
 	int obecnaPozycja[2] = { pozycja[0], pozycja[1] - obecnyRozmiar };
 
-	for (int entery = 0; entery < obecnaPozycja[1] - obecnyRozmiar;entery++)
+	for (int entery = 0; entery < obecnaPozycja[1];entery++)
 	{
 		cout << "\n";
 	}
 
-	for (int x = obecnaPozycja[0]; x < obecnaPozycja[0] + obecnyRozmiar; x++)
+	for (int y = obecnaPozycja[1]; y < obecnaPozycja[1] + obecnyRozmiar; y++)
 	{
 		for (int spacje = 0; spacje < obecnaPozycja[0]; spacje++)
 		{
 			cout << " ";
 		}
-		for (int y = obecnaPozycja[1]; y < obecnaPozycja[1] + obecnyRozmiar; y++)
+		auto pos = &figura[(y- obecnaPozycja[1])*obecnyRozmiar];
+		for (int x = 0; x < obecnyRozmiar; x++)
 		{
-			auto pos = &figura[x];
-			cout << pos[y];
+			cout << pos[x];
 		}
 		cout << "\n";
 	}
+
+}
+
+enum RUCH
+{
+	GORA = 72,
+	LEWO = 75,
+	PRAWO = 77,
+	DOL = 80,
+};
+
+bool ruch(RUCH strona )
+{
 
 }
 
@@ -116,7 +115,28 @@ int main()
 
 	rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
 
-	_getch();
+	int klawisz = 0;
+	while (klawisz != 27)
+	{
+		klawisz = getch();
+		if (klawisz == 72)
+		{
+			ruch();
+			cout << "up\n";
+		}
+		else if (klawisz == 80)
+		{
+			cout << "down\n";
+		}
+		else if (klawisz == 75)
+		{
+			cout << "left\n";
+		}
+		else if (klawisz == 77)
+		{
+			cout << "right\n";
+		}
+	}
 	return 0;
 }
 
