@@ -15,6 +15,12 @@ void czytajDane(char *litera, int *rozmiar)
 
 	cout << "\nPodaj rozmiar: ";
 	cin >> *rozmiar;
+
+	/*
+	- nieparzysty rozmiar
+	- rozmiar mieszczacy sie w ekranie
+	- nie za maly rozmiar ? (>=3)
+	*/
 }
 
 int *przygotujFigure( int rozmiar)
@@ -152,26 +158,35 @@ bool ruch(RUCH strona, int*pozycja, int rozmiar, int zoom, int *rozmiarOkna)
 	}
 }
 
-bool zoom(ZOOM zoom, int rozmiar, int *rozmiarOkna);
-
-int main()
+bool zmienWielkosc(ZOOM zoom, int obecnyZoom, int rozmiar, int *rozmiarOkna)
 {
-	char litera;
-	int rozmiarFigury;
-	int pozycja[2] = { 0 };
-	int rozmiarOkna[2];
+	if (zoom == ZOOM::PLUS)
+	{
+		if (rozmiar+ obecnyZoom  < rozmiarOkna[0] && rozmiar + obecnyZoom < rozmiarOkna[1])
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else if (zoom == ZOOM::MINUS)
+	{
+		if (rozmiar + obecnyZoom-2 >=3)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+void poruszanie(int *pozycja,int rozmiarFigury,int zoom,int litera,int*rozmiarOkna)
+{
 	int *figura = nullptr;
-	int zoom;
-
-
-	inicjalizacjaOkna(rozmiarOkna);
-
-	czytajDane(&litera, &rozmiarFigury);
-	pozycja[1] = rozmiarOkna[1];
-	zoom = 0;
-
-	rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
-
 	int klawisz = 0;
 	while (klawisz != 27)
 	{
@@ -210,9 +225,49 @@ int main()
 		}
 		else if (klawisz == ZOOM::PLUS)
 		{
-
+			if (zmienWielkosc(ZOOM::PLUS, zoom, rozmiarFigury, rozmiarOkna))
+			{
+				pozycja[0] = 0;
+				pozycja[1] = rozmiarOkna[1];
+				zoom += 2;
+				rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
+			}
 		}
+		else if (klawisz == ZOOM::MINUS)
+		{
+			if (zmienWielkosc(ZOOM::MINUS, zoom, rozmiarFigury, rozmiarOkna))
+			{
+				pozycja[0] = 0;
+				pozycja[1] = rozmiarOkna[1];
+				zoom -= 2;
+				rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
+			}
+		}
+		void inicjalizacjaOkna(int *rozmiarOkna);
 	}
+}
+
+int main()
+{
+	char litera;
+	int rozmiarFigury;
+	int pozycja[2] = { 0 };
+	int rozmiarOkna[2];
+	int *figura = nullptr;
+	int zoom;
+
+
+	inicjalizacjaOkna(rozmiarOkna);
+
+	czytajDane(&litera, &rozmiarFigury);
+	pozycja[1] = rozmiarOkna[1];
+	zoom = 0;
+
+	rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
+
+	poruszanie(pozycja, rozmiarFigury, zoom, litera, rozmiarOkna);
+
+	_getch();
 	return 0;
 }
 
