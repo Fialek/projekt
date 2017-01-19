@@ -3,10 +3,8 @@
 #include <Windows.h>
 #include <iostream>
 
-using namespace std;
-
-#define rozmiarPlanszy 30
-#pragma warning(disable:4996)
+#include "definicje.h"
+#include "poruszanie.h"
 
 void czytajDane(char *litera, int *rozmiar)
 {
@@ -58,12 +56,12 @@ void inicjalizacjaOkna(int *rozmiarOkna)
 	rozmiarOkna[1] = csbi.srWindow.Bottom - csbi.srWindow.Top;	
 }
 
-void rysujFigure(int rozmiar, int *pozycja, int zoom, int *figura, char litera, int *rozmiarOkna)
+void rysujFigure(int rozmiar, int *pozycja, int zoom, char litera, int *rozmiarOkna)
 {
 	system("cls");
 
 	int obecnyRozmiar = rozmiar + zoom;
-	figura = przygotujFigure( obecnyRozmiar);
+	int *figura = przygotujFigure( obecnyRozmiar);
 
 	int obecnaPozycja[2] = { pozycja[0], pozycja[1] - obecnyRozmiar };
 
@@ -92,22 +90,10 @@ void rysujFigure(int rozmiar, int *pozycja, int zoom, int *figura, char litera, 
 		}
 		cout << "\n";
 	}
-
+	delete figura;
 }
 
-enum RUCH
-{
-	GORA = 72,
-	LEWO = 75,
-	PRAWO = 77,
-	DOL = 80
-};
 
-enum ZOOM
-{
-	PLUS = 43,
-	MINUS = 45
-};
 
 bool ruch(RUCH strona, int*pozycja, int rozmiar, int zoom, int *rozmiarOkna)
 {
@@ -184,76 +170,12 @@ bool zmienWielkosc(ZOOM zoom, int obecnyZoom, int rozmiar, int *rozmiarOkna)
 	}
 }
 
-void poruszanie(int *pozycja,int rozmiarFigury,int zoom,int litera,int*rozmiarOkna)
-{
-	int *figura = nullptr;
-	int klawisz = 0;
-	while (klawisz != 27)
-	{
-		klawisz = getch();
-		if (klawisz == RUCH::GORA)
-		{
-			if (ruch(RUCH::GORA, pozycja, rozmiarFigury, zoom, rozmiarOkna))
-			{
-				pozycja[1]--;
-				rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
-			}
-		}
-		else if (klawisz == RUCH::DOL)
-		{
-			if (ruch(RUCH::DOL, pozycja, rozmiarFigury, zoom, rozmiarOkna))
-			{
-				pozycja[1]++;
-				rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
-			}
-		}
-		else if (klawisz == RUCH::LEWO)
-		{
-			if (ruch(RUCH::LEWO, pozycja, rozmiarFigury, zoom, rozmiarOkna))
-			{
-				pozycja[0]--;
-				rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
-			}
-		}
-		else if (klawisz == RUCH::PRAWO)
-		{
-			if (ruch(RUCH::PRAWO, pozycja, rozmiarFigury, zoom, rozmiarOkna))
-			{
-				pozycja[0]++;
-				rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
-			}
-		}
-		else if (klawisz == ZOOM::PLUS)
-		{
-			if (zmienWielkosc(ZOOM::PLUS, zoom, rozmiarFigury, rozmiarOkna))
-			{
-				pozycja[0] = 0;
-				pozycja[1] = rozmiarOkna[1];
-				zoom += 2;
-				rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
-			}
-		}
-		else if (klawisz == ZOOM::MINUS)
-		{
-			if (zmienWielkosc(ZOOM::MINUS, zoom, rozmiarFigury, rozmiarOkna))
-			{
-				pozycja[0] = 0;
-				pozycja[1] = rozmiarOkna[1];
-				zoom -= 2;
-				rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
-			}
-		}
-		void inicjalizacjaOkna(int *rozmiarOkna);
-	}
-}
-
 int main()
 {
 	char litera;
 	int rozmiarFigury;
 	int pozycja[2] = { 0 };
 	int rozmiarOkna[2];
-	int *figura = nullptr;
 	int zoom;
 
 
@@ -263,11 +185,10 @@ int main()
 	pozycja[1] = rozmiarOkna[1];
 	zoom = 0;
 
-	rysujFigure(rozmiarFigury, pozycja, zoom, figura, litera, rozmiarOkna);
+	rysujFigure(rozmiarFigury, pozycja, zoom, litera, rozmiarOkna);
 
 	poruszanie(pozycja, rozmiarFigury, zoom, litera, rozmiarOkna);
 
 	_getch();
 	return 0;
 }
-
