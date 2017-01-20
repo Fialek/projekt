@@ -1,12 +1,47 @@
-#include <cstdio>
+﻿#include <cstdio>
 #include <conio.h>
 #include <Windows.h>
 #include <iostream>
 
 #include "definicje.h"
+#include "ruch.h"
 #include "poruszanie.h"
 
-bool jestLitera(int litera)
+/*
+Napisz program rysowania znakiem ASCII poniższej figury. Program powinien
+
+umożliwić:
+
+− wybór znaku kodu ASCII;
+
+− wczytanie początkowych rozmiarów figury;
+
+− przesuwanie figury klawiszami ←, →, ↑, ↓;
+
+− powiększanie oraz zmniejszanie rozmiaru figury za pomocą klawiszy + i -;
+
+− ograniczenie przesuwania i rozmiarów figury do obszaru ekranu;
+
+
+Numer projektu : 170
+20/01/2017
+Fijałkowski Patryk
+
+Dane wejsciowe ilustrujące możliwości programu
+	Zestaw 1:
+		Podany znak : ctrl
+	Zestaw 2:
+		Podany znak : Z
+		Podany rozmiar: 1
+	Zestaw 3:
+		Podany znak : Z
+		Podany rozmiar: 4
+	Zestaw 4: 
+		Podany znak: Z
+		Podany rozmiar: 5
+
+*/
+bool jestLitera(int litera)	//funkcja sprawdzająca poprawność wprowadzonego znaku
 {
 	if (litera <= 0 || litera > 127) // znaki specjalne
 	{
@@ -19,11 +54,11 @@ bool jestLitera(int litera)
 
 	return false;
 }
-void czytajDane(char *litera, int *rozmiar)
+void czytajDane(char *litera, int *rozmiar)	// funckja zczytująca dane wejściowe
 {
 	cout << "\nPodaj znak: ";
 	*litera = _getch();
-	while (!jestLitera(*litera))
+	while (!jestLitera(*litera))	// pętla pobierająca poprawny znak
 	{
 		cout << "\nPodany znak nie jest litera. Sprobuj ponownie";
 		cout << "\nPodaj litere: ";
@@ -33,12 +68,12 @@ void czytajDane(char *litera, int *rozmiar)
 
 	cout << "\nPodaj rozmiar (liczba nieparzysta i niemniejsza niz 3) :  ";
 	cin >> *rozmiar;
-	if ((*rozmiar) % 2 == 0)
+	if ((*rozmiar) % 2 == 0)	//warunek sprawdzający parzystość wprowadzonego rozmiaru
 	{
 		(*rozmiar)++;
 		cout << "\nLiczba jest parzysta. Zostala powieszkona do " << *rozmiar;
 	}
-	if (*rozmiar < 3)
+	if (*rozmiar < 3)		//warunek sprawdzający minimalny rozmiar planszy (warunek stworzenia przekątnych)
 	{
 		*rozmiar = 3;
 		cout << "\nLiczba mniejsza od 3. Nowy rozmiar to 3";
@@ -48,7 +83,7 @@ void czytajDane(char *litera, int *rozmiar)
 	_getch();
 }
 
-int *przygotujFigure( int rozmiar)
+int *przygotujFigure( int rozmiar)	//przygotowanie tablicy ze znakami
 {
 	int *figura;
 
@@ -72,7 +107,7 @@ int *przygotujFigure( int rozmiar)
 	return figura;
 }
 
-void inicjalizacjaOkna(int *rozmiarOkna)
+void inicjalizacjaOkna(int *rozmiarOkna)	// pobieranie właściwości okna konsoli
 {
 	SendMessage(GetConsoleWindow(), WM_SYSKEYDOWN, VK_RETURN, 0x20000000);
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -83,7 +118,7 @@ void inicjalizacjaOkna(int *rozmiarOkna)
 	rozmiarOkna[1] = csbi.srWindow.Bottom - csbi.srWindow.Top;	
 }
 
-void rysujFigure(int rozmiar, int *pozycja, int zoom, char litera, int *rozmiarOkna)
+void rysujFigure(int rozmiar, int *pozycja, int zoom, char litera, int *rozmiarOkna)  // zapełnianie konsoli znakami
 {
 	system("cls");
 
@@ -120,58 +155,7 @@ void rysujFigure(int rozmiar, int *pozycja, int zoom, char litera, int *rozmiarO
 	delete figura;
 }
 
-
-
-bool ruch(RUCH strona, int*pozycja, int rozmiar, int zoom, int *rozmiarOkna)
-{
-	int obecnyRozmiar = rozmiar + zoom;
-	if (strona == RUCH::GORA)
-	{
-		if (pozycja[1] - obecnyRozmiar > 0)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	else if (strona == RUCH::DOL)
-	{
-		if (pozycja[1] <rozmiarOkna[1])
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	else if (strona == RUCH::LEWO)
-	{
-		if (pozycja[0] >0)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	else if (strona == RUCH::PRAWO)
-	{
-		if (pozycja[0] + obecnyRozmiar < rozmiarOkna[0]+1)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-}
-
-bool zmienWielkosc(ZOOM zoom, int obecnyZoom, int rozmiar, int *rozmiarOkna)
+bool zmienWielkosc(ZOOM zoom, int obecnyZoom, int rozmiar, int *rozmiarOkna) //funckaja odpowiadająca za sprawdzenie  poprawności operacji zoomu
 {
 	if (zoom == ZOOM::PLUS)
 	{
@@ -199,6 +183,7 @@ bool zmienWielkosc(ZOOM zoom, int obecnyZoom, int rozmiar, int *rozmiarOkna)
 
 int main()
 {
+	// wywoływanie funkcji
 	char litera;
 	int rozmiarFigury;
 	int pozycja[2] = { 0 };

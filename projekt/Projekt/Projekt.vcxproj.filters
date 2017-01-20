@@ -26,5 +26,8 @@
     <ClInclude Include="definicje.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ruch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -115,6 +115,7 @@
   <ItemGroup>
     <ClInclude Include="definicje.h" />
     <ClInclude Include="poruszanie.h" />
+    <ClInclude Include="ruch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

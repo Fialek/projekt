@@ -1,6 +1,6 @@
 #pragma once
 
-void poruszanie(int *pozycja, int rozmiarFigury, int zoom, int litera, int*rozmiarOkna)
+void poruszanie(int *pozycja, int rozmiarFigury, int zoom, int litera, int*rozmiarOkna) //interpretacja wciœniêtych klawiszy
 {
 	int klawisz = 0;
 	while (klawisz != 27) // ESC
