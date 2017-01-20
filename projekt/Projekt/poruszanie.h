@@ -1,8 +1,4 @@
 #pragma once
-using namespace std;
-
-
-
 
 void poruszanie(int *pozycja, int rozmiarFigury, int zoom, int litera, int*rozmiarOkna)
 {

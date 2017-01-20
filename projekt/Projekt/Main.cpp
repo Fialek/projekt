@@ -6,19 +6,46 @@
 #include "definicje.h"
 #include "poruszanie.h"
 
+bool jestLitera(int litera)
+{
+	if (litera <= 0 || litera > 127) // znaki specjalne
+	{
+		_getch();
+		return false;
+	}
+
+	if (litera >= 33 && litera <= 126)
+		return true;
+
+	return false;
+}
 void czytajDane(char *litera, int *rozmiar)
 {
-	cout << "\nPodaj litere: ";
-	cin >> *litera;
+	cout << "\nPodaj znak: ";
+	*litera = _getch();
+	while (!jestLitera(*litera))
+	{
+		cout << "\nPodany znak nie jest litera. Sprobuj ponownie";
+		cout << "\nPodaj litere: ";
 
-	cout << "\nPodaj rozmiar: ";
+		*litera = _getch();
+	}
+
+	cout << "\nPodaj rozmiar (liczba nieparzysta i niemniejsza niz 3) :  ";
 	cin >> *rozmiar;
+	if ((*rozmiar) % 2 == 0)
+	{
+		(*rozmiar)++;
+		cout << "\nLiczba jest parzysta. Zostala powieszkona do " << *rozmiar;
+	}
+	if (*rozmiar < 3)
+	{
+		*rozmiar = 3;
+		cout << "\nLiczba mniejsza od 3. Nowy rozmiar to 3";
+	}
 
-	/*
-	- nieparzysty rozmiar
-	- rozmiar mieszczacy sie w ekranie
-	- nie za maly rozmiar ? (>=3)
-	*/
+	cout << "\nRozmiar oraz litera ustalone. Nacisnij dowolny klawisz aby kontynuowac...";
+	_getch();
 }
 
 int *przygotujFigure( int rozmiar)
